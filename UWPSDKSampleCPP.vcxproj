@@ -161,6 +161,7 @@
     <ClInclude Include="..\..\..\SharedContent\cpp\MainPage.xaml.h">
       <DependentUpon>..\..\..\SharedContent\cpp\MainPage.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SampleConfiguration.h" />
     <ClInclude Include="Scenario1.xaml.h">
       <DependentUpon>Scenario1.xaml</DependentUpon>
@@ -170,6 +171,9 @@
     </ClInclude>
     <ClInclude Include="Scenario3.xaml.h">
       <DependentUpon>Scenario3.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="Scenario4.xaml.h">
+      <DependentUpon>Scenario4.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="ToneSampleGenerator.h" />
     <ClInclude Include="WASAPICapture.h" />
@@ -187,6 +191,9 @@
     <Page Include="Scenario3.xaml" />
     <Page Include="..\..\..\SharedContent\xaml\Styles.xaml">
       <Link>Styles\Styles.xaml</Link>
+    </Page>
+    <Page Include="Scenario4.xaml">
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +227,9 @@
     <ClCompile Include="Scenario3.xaml.cpp">
       <DependentUpon>Scenario3.xaml</DependentUpon>
     </ClCompile>
+    <ClCompile Include="Scenario4.xaml.cpp">
+      <DependentUpon>Scenario4.xaml</DependentUpon>
+    </ClCompile>
     <ClCompile Include="ToneSampleGenerator.cpp" />
     <ClCompile Include="WASAPIRender.cpp" />
     <ClCompile Include="WASAPICapture.cpp" />
@@ -246,6 +256,9 @@
     <Image Include="..\..\..\SharedContent\media\windows-sdk.png">
       <Link>Assets\windows-sdk.png</Link>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UWPSDKSampleCPP.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

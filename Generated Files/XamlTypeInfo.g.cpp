@@ -14,12 +14,14 @@
 #include "Scenario1.xaml.h"
 #include "Scenario2.xaml.h"
 #include "Scenario3.xaml.h"
+#include "Scenario4.xaml.h"
 #include "XamlBindingInfo.g.hpp"
 #include "App.g.hpp"
 #include "MainPage.g.hpp"
 #include "Scenario1.g.hpp"
 #include "Scenario2.g.hpp"
 #include "Scenario3.g.hpp"
+#include "Scenario4.g.hpp"
 
 template<typename T>
 ::Platform::Object^ ActivateType()
@@ -96,6 +98,12 @@ TypeInfo TypeInfos[] =
     0, 0, ::Windows::UI::Xaml::Interop::TypeKind::Custom,
     true,  false, false, false,
     //   5
+    L"SDKTemplate.WASAPIAudio.Scenario4", L"",
+    &ActivateType<::SDKTemplate::WASAPIAudio::Scenario4>, nullptr, nullptr, nullptr,
+    1, // Windows.UI.Xaml.Controls.Page
+    0, 0, ::Windows::UI::Xaml::Interop::TypeKind::Custom,
+    true,  false, false, false,
+    //   6
     L"Windows.UI.Xaml.Controls.UserControl", L"",
     nullptr, nullptr, nullptr, nullptr,
     -1,
@@ -144,10 +152,10 @@ UINT TypeInfoLookup[] = {
       2,   //  31
       2,   //  32
       2,   //  33
-      5,   //  34
-      5,   //  35
-      5,   //  36
-      6,   //  37
+      6,   //  34
+      6,   //  35
+      6,   //  36
+      7,   //  37
 };
 
 TypeInfo* GetTypeInfo(::Platform::String^ typeName)

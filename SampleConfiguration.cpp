@@ -19,5 +19,6 @@ Platform::Array<Scenario>^ MainPage::scenariosInner = ref new Platform::Array<Sc
 {
     { "Playback", "SDKTemplate.WASAPIAudio.Scenario1" },
     { "Device Enumerator", "SDKTemplate.WASAPIAudio.Scenario2" },
-    { "Capture", "SDKTemplate.WASAPIAudio.Scenario3" }
+    { "Capture", "SDKTemplate.WASAPIAudio.Scenario3" },
+	{ "Capture & Playback", "SDKTemplate.WASAPIAudio.Scenario4"}
 };
