@@ -1,0 +1,122 @@
+﻿<!-- 
+//*********************************************************
+//
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the MIT License (MIT).
+// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+//
+//*********************************************************
+-->
+<Page
+    x:Class="SDKTemplate.WASAPIAudio.Scenario1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:SDKTemplate"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:ConnectionId='1' x:Name="wideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="640"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                </VisualState>
+                <VisualState x:ConnectionId='2' x:Name="narrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0">
+                        </AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="contentPanel.Orientation" Value="Vertical"></Setter>
+                        <Setter Target="btnPause.Width" Value="60"></Setter>
+                        <Setter Target="btnPlay.Width" Value="60"></Setter>
+                        <Setter Target="btnStop.Width" Value="60"></Setter>
+                        <Setter Target="btnPlayPause.Width" Value="100"></Setter>
+                        <Setter Target="btnPause.Margin" Value="80,5,0,0"></Setter>
+                        <Setter Target="btnPlayPause.Margin" Value="150,5,0,0"></Setter>
+                        <Setter Target="btnBorder.Width" Value="550"></Setter>
+                        <Setter Target="btnStop.Margin" Value="0,5,0,0"></Setter>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid x:ConnectionId='3' x:Name="RootGrid" Margin="12,10,12,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+        </Grid>
+        <Grid x:ConnectionId='4' x:Name="Input" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel x:ConnectionId='5' x:Name="contentPanel" Grid.Row="1" Orientation="Horizontal" Margin="5,10,0,0">
+                <Border BorderBrush="Black" BorderThickness="2" Width="400" Margin="0,0,15,0">
+                    <Grid Width="390">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <RadioButton x:ConnectionId='13' x:Name="radioTone" Grid.Row="1" Content="Tone" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,7,10,0"                             IsChecked="True"/>
+                        <Slider x:ConnectionId='14' x:Name="sliderFrequency" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="290" Height="40" Minimum="27" Maximum="6000" SmallChange="10" LargeChange="100" Value="440"                                             Margin="0,0,10,0"/>
+                        <RadioButton x:ConnectionId='15' x:Name="radioFile" Grid.Row="2" Content="File" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,7,10,0"                            />
+                        <Button x:ConnectionId='16' x:Name="btnFilePicker" Grid.Row="2" Content="Choose File" VerticalAlignment="Top" Width="120" Margin="87,3,0,0"                             IsEnabled="False"/>
+                        <TextBox x:ConnectionId='17' x:Name="txtContentProps" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Top" Width="390" Margin="0,5,0,0" IsReadOnly="True"/>
+                    </Grid>
+                </Border>
+
+                <Border BorderBrush="Black" BorderThickness="2" Width="400" Margin="0,0,15,0">
+                    <Grid Width="390" Height="220">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Additional Options:"  Margin="2,2,0,0"/>
+                        <TextBlock Grid.Row="3" Text="Raw Mode:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,10,0,0"/>
+                        <ToggleSwitch x:ConnectionId='11' x:Name="toggleRawAudio" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="35" OffContent="" OnContent="" Margin="120,34,0,0" Grid.RowSpan="2"/>
+                        <TextBlock Grid.Row="4" Text="Volume:" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="5,8,0,0"/>
+                        <Slider x:ConnectionId='12' x:Name="sliderVolume" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="260" Margin="120,0,0,0" Value="100"                                         />
+
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="-5,354,10,5" Grid.RowSpan="2">
+                <Border x:ConnectionId='6' x:Name="btnBorder" BorderBrush="Black" BorderThickness="2" Height="75" Width="815" Margin="0,0,20,0">
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="384*"/>
+                            <ColumnDefinition Width="427*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Media Controls:" VerticalAlignment="Top"  Margin="2,2,-1,0" Grid.ColumnSpan="2"/>
+                        <Button x:ConnectionId='7' x:Name="btnPlay" Grid.Row="1" Content="Play" VerticalAlignment="Top" Margin="15,5,0,0"                       Width="120"/>
+                        <Button x:ConnectionId='8' x:Name="btnPause" Grid.Row="1" Content="Pause" VerticalAlignment="Top" Margin="140,5,0,0"                        Width="120" IsEnabled="False"/>
+                        <Button x:ConnectionId='9' x:Name="btnPlayPause" Grid.Row="1" Content="Play / Pause" VerticalAlignment="Top" Margin="265,5,0,0"                            Width="120" Grid.ColumnSpan="2"/>
+                        <Button x:ConnectionId='10' x:Name="btnStop" Grid.Row="1" Content="Stop" VerticalAlignment="Top"                       Width="120" IsEnabled="False" Margin="10,5,0,0" Grid.Column="1"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</Page>
+
