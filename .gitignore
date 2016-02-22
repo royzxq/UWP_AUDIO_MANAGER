@@ -6,3 +6,6 @@ Debug/
 ipch/
 AudioEngineTest/Debug/
 cpp/
+Generated\ Files/
+.*
+!.gitignore

@@ -25,8 +25,43 @@ void ::SDKTemplate::WASAPIAudio::Scenario4::InitializeComponent()
 
 void ::SDKTemplate::WASAPIAudio::Scenario4::Connect(int __connectionId, ::Platform::Object^ __target)
 {
-    __connectionId;         // unreferenced 
-    __target;               // unreferenced
+    switch (__connectionId)
+    {
+        case 1:
+            {
+                this->LayoutRoot = safe_cast<::Windows::UI::Xaml::Controls::Grid^>(__target);
+            }
+            break;
+        case 2:
+            {
+                this->Input = safe_cast<::Windows::UI::Xaml::Controls::Grid^>(__target);
+            }
+            break;
+        case 3:
+            {
+                this->btnStartCapture = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
+                (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->btnStartCapture))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::SDKTemplate::WASAPIAudio::Scenario4::*)
+                    (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&Scenario4::btnStartCapture_Click);
+            }
+            break;
+        case 4:
+            {
+                this->btnStopCapture = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
+                (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->btnStopCapture))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::SDKTemplate::WASAPIAudio::Scenario4::*)
+                    (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&Scenario4::btnStopCapture_Click);
+            }
+            break;
+        case 5:
+            {
+                this->DefaultLayout = safe_cast<::Windows::UI::Xaml::VisualState^>(__target);
+            }
+            break;
+        case 6:
+            {
+                this->Below768Layout = safe_cast<::Windows::UI::Xaml::VisualState^>(__target);
+            }
+            break;
+    }
     _contentLoaded = true;
 }
 

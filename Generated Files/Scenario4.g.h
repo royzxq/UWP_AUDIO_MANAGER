@@ -7,6 +7,23 @@
 //------------------------------------------------------------------------------
 
 
+namespace Windows {
+    namespace UI {
+        namespace Xaml {
+            namespace Controls {
+                ref class Grid;
+                ref class Button;
+            }
+        }
+    }
+}
+namespace Windows {
+    namespace UI {
+        namespace Xaml {
+            ref class VisualState;
+        }
+    }
+}
 
 namespace SDKTemplate
 {
@@ -25,6 +42,12 @@ namespace SDKTemplate
         private:
             bool _contentLoaded;
         
+            private: ::Windows::UI::Xaml::Controls::Grid^ LayoutRoot;
+            private: ::Windows::UI::Xaml::Controls::Grid^ Input;
+            private: ::Windows::UI::Xaml::Controls::Button^ btnStartCapture;
+            private: ::Windows::UI::Xaml::Controls::Button^ btnStopCapture;
+            private: ::Windows::UI::Xaml::VisualState^ DefaultLayout;
+            private: ::Windows::UI::Xaml::VisualState^ Below768Layout;
         };
     }
 }
