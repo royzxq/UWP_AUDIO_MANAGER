@@ -70,11 +70,13 @@ void SDKTemplate::WASAPIAudio::Scenario4::btnStartCapture_Click(Platform::Object
 {
 	ShowStatusMessage("", NotifyType::StatusMessage);
 	InitCapture(sender, e);
+	StartDevice();
 }
 
 void SDKTemplate::WASAPIAudio::Scenario4::btnStopCapture_Click(Platform::Object ^ sender, Windows::UI::Xaml::RoutedEvent ^e)
 {
 	StopCapture(sender, e);
+	StopDevice();
 }
 
 void SDKTemplate::WASAPIAudio::Scenario4::ShowStatusMessage(Platform::String^ str, NotifyType messageType)
@@ -211,5 +213,76 @@ void SDKTemplate::WASAPIAudio::Scenario4::StopCapture(Object ^ sender, Object^ e
 	if (m_spCapture)
 	{
 		m_spCapture->StopCaptureAsync();
+	}
+}
+
+void SDKTemplate::WASAPIAudio::Scenario4::StartDevice()
+{
+	if (nullptr == m_spRender)
+	{
+		InitDevice();
+	}
+	else
+	{
+		m_spRender->StartPlaybackAsync();
+	}
+}
+
+void SDKTemplate::WASAPIAudio::Scenario4::InitDevice()
+{
+	HRESULT hr = S_OK;
+	if (m_spRender == nullptr)
+	{
+		m_spRender = Make<WASAPIRender>();
+		if (nullptr == m_spRender)
+		{
+			OnDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_OUTOFMEMORY));
+			return;
+		}
+
+		m_StateChangeEvent = m_spRender->GetDeviceStateEvent();
+		if (nullptr == m_StateChangeEvent)
+		{
+			OnDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_FAIL));
+			return;
+		}
+		m_deviceStateChangeToken = m_StateChangeEvent->StateChangedEvent += ref new DeviceChangedHandler(this, &Scenario4::OnDeviceStateChange);
+
+		DEVICEPROPS props;
+		int bufferSize = 0;
+		//swscanf_s(txtHWBuffer->Text->Data(), L"%d", &bufferSize);
+		/*switch (m_ContentType)
+		{
+		case ContentType::ContentTypeTone:
+			props.IsTonePlayback = true;
+			props.Frequency = static_cast<DWORD>(sliderFrequency->Value);
+			break;
+
+		case ContentType::ContentTypeFile:
+			props.IsTonePlayback = false;
+			props.ContentStream = m_ContentStream;
+			break;
+		}*/
+
+		props.IsLowLatency = false;
+		//props.IsRawChosen = static_cast<Platform::Boolean>(toggleRawAudio->IsOn);
+		props.IsRawChosen = false;
+		props.IsHWOffload = false;
+		//props.IsRawSupported = m_deviceSupportsRawMode;
+		props.hnsBufferDuration = static_cast<REFERENCE_TIME>(bufferSize);
+
+		m_spRender->SetProperties(props);
+
+		// Selects the Default Audio Device
+		m_spRender->InitAudioDeviceAsync();
+
+	}
+}
+
+void SDKTemplate::WASAPIAudio::Scenario4::StopDevice()
+{
+	if (m_spRender)
+	{
+		m_spRender->StopPlaybackAsync();
 	}
 }

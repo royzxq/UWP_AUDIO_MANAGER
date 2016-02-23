@@ -3,6 +3,7 @@
 #include "Scenario4.g.h"
 #include "MainPage.xaml.h"
 #include "WASAPICapture.h"
+#include "WASAPIRender.h"
 
 namespace SDKTemplate
 {
@@ -28,6 +29,10 @@ namespace SDKTemplate
 		void InitCapture(Object ^ sender, Object ^ e);
 		void StopCapture(Object ^ sender, Object^ e);
 
+		void StartDevice();
+		void InitDevice();
+		void StopDevice();
+
 	private:
 		MainPage ^ rootPage;
 		Windows::UI::Core::CoreDispatcher^ m_CoreDispatcher;
@@ -37,6 +42,7 @@ namespace SDKTemplate
 		Platform::Boolean m_IsMFLoaded;
 		DeviceChangedEvent ^ m_StateChangeEvent;
 		ComPtr<WASAPICapture> m_spCapture;
+		ComPtr<WASAPIRender> m_spRender;
 	};
 	}
 }
