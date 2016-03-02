@@ -15,7 +15,7 @@ using namespace Windows::UI::Xaml::Controls;
 using namespace Windows::UI::Xaml::Navigation;
 
 
-SDKTemplate::WASAPIAudio::Scenario4::Scenario4() :m_IsMFLoaded(false), m_StateChangeEvent(nullptr), m_spCapture(nullptr), rootPage(MainPage::Current)
+SDKTemplate::WASAPIAudio::Scenario4::Scenario4() :m_IsMFLoaded(false), m_StateChangeEvent(nullptr), m_spCapture(nullptr), m_spRender(nullptr), rootPage(MainPage::Current), m_spRenderCapture(nullptr)
 {
 	InitializeComponent();
 	HRESULT hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);
@@ -113,6 +113,83 @@ void SDKTemplate::WASAPIAudio::Scenario4::UpdateMediaControlUI(DeviceState devic
 
 void SDKTemplate::WASAPIAudio::Scenario4::OnDeviceStateChange(Object ^ sender, DeviceStateChangedEventArgs ^ e)
 {
+	m_CoreDispatcher->RunAsync(CoreDispatcherPriority::Normal, ref new Windows::UI::Core::DispatchedHandler([this, e]()
+	{
+		UpdateMediaControlUI(e->State);
+	}));
+
+	switch (e->State)
+	{
+	case DeviceState::DeviceStateInitialized:
+		StartDevice();
+		//m_SystemMediaControls->PlaybackStatus = MediaPlaybackStatus::Closed;
+		break;
+	case DeviceState::DeviceStatePlaying:
+		ShowStatusMessage("Playback Started", NotifyType::StatusMessage);
+		//m_SystemMediaControls->PlaybackStatus = MediaPlaybackStatus::Playing;
+		break;
+
+	case DeviceState::DeviceStatePaused:
+		ShowStatusMessage("Playback Paused", NotifyType::StatusMessage);
+		//m_SystemMediaControls->PlaybackStatus = MediaPlaybackStatus::Paused;
+		break;
+
+	case DeviceState::DeviceStateStopped:
+		m_spRender = nullptr;
+
+		if (m_deviceStateChangeToken.Value != 0)
+		{
+			m_StateChangeEvent->StateChangedEvent -= m_deviceStateChangeToken;
+			m_StateChangeEvent = nullptr;
+			m_deviceStateChangeToken.Value = 0;
+		}
+
+		ShowStatusMessage("Playback Stopped", NotifyType::StatusMessage);
+		//m_SystemMediaControls->PlaybackStatus = MediaPlaybackStatus::Stopped;
+		break;
+
+	case DeviceState::DeviceStateInError:
+		HRESULT hr = e->hr;
+
+		if (m_deviceStateChangeToken.Value != 0)
+		{
+			m_StateChangeEvent->StateChangedEvent -= m_deviceStateChangeToken;
+			m_StateChangeEvent = nullptr;
+			m_deviceStateChangeToken.Value = 0;
+		}
+
+		m_spRender = nullptr;
+
+		//m_SystemMediaControls->PlaybackStatus = MediaPlaybackStatus::Closed;
+
+		wchar_t hrVal[11];
+		swprintf_s(hrVal, 11, L"0x%08x\0", hr);
+		String^ strHRVal = ref new String(hrVal);
+
+		String^ strMessage = "";
+
+		// Specifically handle a couple of known errors
+		switch (hr)
+		{
+		case AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE:
+			strMessage = "ERROR: Endpoint Does Not Support HW Offload (" + strHRVal + ")";
+			ShowStatusMessage(strMessage, NotifyType::ErrorMessage);
+			break;
+
+		case AUDCLNT_E_RESOURCES_INVALIDATED:
+			strMessage = "ERROR: Endpoint Lost Access To Resources (" + strHRVal + ")";
+			ShowStatusMessage(strMessage, NotifyType::ErrorMessage);
+			break;
+		default:
+			strMessage = "ERROR" + strHRVal + " has occurred";
+			ShowStatusMessage(strMessage, NotifyType::ErrorMessage);
+			break;
+		}
+	}
+}
+
+void SDKTemplate::WASAPIAudio::Scenario4::OnCaptureDeviceStateChange(Object ^ sender, DeviceStateChangedEventArgs ^ e)
+{
 	String ^ strMessage = "";
 
 	auto t = Windows::Globalization::DateTimeFormatting::DateTimeFormatter::LongTime;
@@ -183,70 +260,74 @@ void SDKTemplate::WASAPIAudio::Scenario4::OnDeviceStateChange(Object ^ sender, D
 void SDKTemplate::WASAPIAudio::Scenario4::InitCapture(Object ^ sender, Object ^ e)
 {
 	HRESULT hr = S_OK;
-	if (m_spCapture)
+	if (m_spRenderCapture)
 	{
-		m_spCapture = nullptr;
+		m_spRenderCapture = nullptr;
 	}
-	m_spCapture = Make<WASAPICapture>();
-	if (nullptr == m_spCapture)
+	m_spRenderCapture = Make<WASAPIRenderCapture>();
+	if (nullptr == m_spRenderCapture)
 	{
-		OnDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_OUTOFMEMORY));
+		OnCaptureDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_OUTOFMEMORY));
 		return;
 	}
 
-	m_StateChangeEvent = m_spCapture->GetDeviceStateEvent();
+	m_StateChangeEvent = m_spRenderCapture->GetDeviceStateEvent();
 	if (nullptr == m_StateChangeEvent)
 	{
-		OnDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_FAIL));
+		OnCaptureDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_FAIL));
 		return;
 	}
 
-	m_deviceStateChangeToken = m_StateChangeEvent->StateChangedEvent += ref new DeviceChangedHandler(this, &Scenario4::OnDeviceStateChange);
+	m_deviceStateChangeToken = m_StateChangeEvent->StateChangedEvent += ref new DeviceChangedHandler(this, &Scenario4::OnCaptureDeviceStateChange);
 
 
 	m_DiscontinuityCount = 0;
-	m_spCapture->InitAudioDeviceAsync();
+	m_spRenderCapture->InitAudioDeviceAsync();
 }
 
 void SDKTemplate::WASAPIAudio::Scenario4::StopCapture(Object ^ sender, Object^ e)
 {
-	if (m_spCapture)
+	if (m_spRenderCapture)
 	{
-		m_spCapture->StopCaptureAsync();
+		m_spRenderCapture->StopCaptureAsync();
 	}
 }
 
 void SDKTemplate::WASAPIAudio::Scenario4::StartDevice()
 {
-	if (nullptr == m_spRender)
+	if (nullptr == m_spRenderCapture || !m_spRenderCapture->m_RenderInit)
 	{
 		InitDevice();
 	}
 	else
 	{
-		m_spRender->StartPlaybackAsync();
+		m_spRenderCapture->StartPlaybackAsync();
 	}
 }
 
 void SDKTemplate::WASAPIAudio::Scenario4::InitDevice()
 {
 	HRESULT hr = S_OK;
-	if (m_spRender == nullptr)
+	if (m_spRenderCapture == nullptr)
 	{
-		m_spRender = Make<WASAPIRender>();
-		if (nullptr == m_spRender)
+		m_spRenderCapture = Make<WASAPIRenderCapture>();
+		if (nullptr == m_spRenderCapture)
 		{
 			OnDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_OUTOFMEMORY));
 			return;
 		}
 
-		m_StateChangeEvent = m_spRender->GetDeviceStateEvent();
+		m_StateChangeEvent = m_spRenderCapture->GetDeviceStateEvent();
 		if (nullptr == m_StateChangeEvent)
 		{
 			OnDeviceStateChange(this, ref new DeviceStateChangedEventArgs(DeviceState::DeviceStateInError, E_FAIL));
 			return;
 		}
 		m_deviceStateChangeToken = m_StateChangeEvent->StateChangedEvent += ref new DeviceChangedHandler(this, &Scenario4::OnDeviceStateChange);
+	}
+	else
+	{
+
 
 		DEVICEPROPS props;
 		int bufferSize = 0;
@@ -270,19 +351,20 @@ void SDKTemplate::WASAPIAudio::Scenario4::InitDevice()
 		props.IsHWOffload = false;
 		//props.IsRawSupported = m_deviceSupportsRawMode;
 		props.hnsBufferDuration = static_cast<REFERENCE_TIME>(bufferSize);
-
-		m_spRender->SetProperties(props);
+		m_spRenderCapture->m_RenderInit = true;
+		m_spRenderCapture->SetProperties(props);
 
 		// Selects the Default Audio Device
-		m_spRender->InitAudioDeviceAsync();
-
+		m_spRenderCapture->InitAudioDeviceAsync();
 	}
+
+	
 }
 
 void SDKTemplate::WASAPIAudio::Scenario4::StopDevice()
 {
-	if (m_spRender)
+	if (m_spRenderCapture)
 	{
-		m_spRender->StopPlaybackAsync();
+		m_spRenderCapture->StopPlaybackAsync();
 	}
 }

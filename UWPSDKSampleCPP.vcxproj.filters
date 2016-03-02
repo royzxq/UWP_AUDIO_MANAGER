@@ -24,6 +24,9 @@
     <ClCompile Include="Scenario2.xaml.cpp" />
     <ClCompile Include="WASAPICapture.cpp" />
     <ClCompile Include="Scenario3.xaml.cpp" />
+    <ClCompile Include="Scenario4.xaml.cpp" />
+    <ClCompile Include="WASAPIRenderCapture.cpp" />
+    <ClCompile Include="CaptureBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -40,6 +43,9 @@
     <ClInclude Include="WASAPICapture.h" />
     <ClInclude Include="Scenario3.xaml.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Scenario4.xaml.h" />
+    <ClInclude Include="WASAPIRenderCapture.h" />
+    <ClInclude Include="CaptureBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

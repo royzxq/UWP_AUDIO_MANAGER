@@ -4,6 +4,7 @@
 #include "MainPage.xaml.h"
 #include "WASAPICapture.h"
 #include "WASAPIRender.h"
+#include "WASAPIRenderCapture.h"
 
 namespace SDKTemplate
 {
@@ -25,10 +26,13 @@ namespace SDKTemplate
 		void UpdateMediaControlUI(DeviceState deviceState);
 
 		void OnDeviceStateChange(Object ^ sender, DeviceStateChangedEventArgs ^ e);
+		void OnCaptureDeviceStateChange(Object ^ sender, DeviceStateChangedEventArgs ^ e);
 
+		// capture functions
 		void InitCapture(Object ^ sender, Object ^ e);
 		void StopCapture(Object ^ sender, Object^ e);
 
+		// playback functions
 		void StartDevice();
 		void InitDevice();
 		void StopDevice();
@@ -43,6 +47,7 @@ namespace SDKTemplate
 		DeviceChangedEvent ^ m_StateChangeEvent;
 		ComPtr<WASAPICapture> m_spCapture;
 		ComPtr<WASAPIRender> m_spRender;
+		ComPtr<WASAPIRenderCapture> m_spRenderCapture;
 	};
 	}
 }
